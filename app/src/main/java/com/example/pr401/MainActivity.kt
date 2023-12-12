@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,8 +57,7 @@ class MainActivity : ComponentActivity() {
             PR401Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     Main()
                 }
@@ -117,8 +117,7 @@ fun Main(modifier: Modifier = Modifier) {
 
             // Segundo apartado
             Box(
-                modifier = Modifier
-                    .padding(top = 9.dp, bottom = 9.dp, start = 9.dp, end = 9.dp)
+                modifier = Modifier.padding(top = 9.dp, bottom = 9.dp, start = 9.dp, end = 9.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -138,18 +137,31 @@ fun Main(modifier: Modifier = Modifier) {
                             var numeroArray: Int by remember { mutableStateOf(0) }
                             var alumnosArray by remember { mutableStateOf<IntArray?>(null) }
                             var notasTexto by remember { mutableStateOf(TextFieldValue("")) }
-
+                            var mostrarDialogo by remember { mutableStateOf(false) }
+                            var mensajeDialogo by remember { mutableStateOf("") }
                             var botonPresionado by remember { mutableStateOf(false) }
 
 
                             // OutlinedTextField para ingresar el número de alumnos
                             if (!botonPresionado) {
-                                OutlinedTextField(
-                                    value = numeroTexto,
+                                OutlinedTextField(value = numeroTexto,
                                     onValueChange = {
                                         // Manejar el cambio de texto y convertirlo a Int
-                                        numeroTexto = it
-                                        numeroArray = it.text.toIntOrNull() ?: 0
+                                        val nuevoNumero = it.text.toIntOrNull()
+
+                                        if (nuevoNumero != null && nuevoNumero >= 0) {
+                                            numeroTexto = it
+                                            numeroArray = nuevoNumero
+                                        } else {
+                                            numeroTexto = TextFieldValue("")
+                                            numeroArray = 0
+                                            mostrarDialogo = true
+                                            mensajeDialogo = if (it.text.isNotEmpty()) {
+                                                "Por favor, ingrese un número entero positivo"
+                                            } else {
+                                                "Por favor, ingrese un número"
+                                            }
+                                        }
                                     },
                                     label = { Text(text = "Ingresa el numero de alumnos del curso:") },
                                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -167,13 +179,11 @@ fun Main(modifier: Modifier = Modifier) {
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End
                                 ) {
-                                    Button(
-                                        onClick = {
-                                            // Crear un array con el tamaño indicado
-                                            alumnosArray = IntArray(numeroArray)
-                                            botonPresionado = true
-                                        }
-                                    ) {
+                                    Button(onClick = {
+                                        // Crear un array con el tamaño indicado
+                                        alumnosArray = IntArray(numeroArray)
+                                        botonPresionado = true
+                                    }) {
                                         Icon(Icons.Default.Send, contentDescription = null)
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text("Enviar")
@@ -182,8 +192,7 @@ fun Main(modifier: Modifier = Modifier) {
                             }
 
                             if (botonPresionado && alumnosArray != null) {
-                                OutlinedTextField(
-                                    value = notasTexto,
+                                OutlinedTextField(value = notasTexto,
                                     onValueChange = {
                                         // Manejar el cambio de texto y convertirlo a Int
                                         notasTexto = it
@@ -211,30 +220,59 @@ fun Main(modifier: Modifier = Modifier) {
                                                     alumnosArray!![indice] = notasTexto.text.toInt()
                                                     // Limpiar el campo de notas
                                                     notasTexto = TextFieldValue("")
-                                                    // Realizar la acción deseada con las notas (en este ejemplo, imprimir el array)
-                                                    println("Notas ingresadas: ${alumnosArray!!.contentToString()}")
                                                 } else {
-                                                    // Mostrar un mensaje si el array está lleno
-                                                    println("El array de alumnos ya está lleno")
+                                                    mostrarDialogo = true
+                                                    mensajeDialogo =
+                                                        "Ya has ingresado todas las notas"
                                                 }
                                             }
-                                        },
-                                        modifier = Modifier
-                                            .padding(top = 8.dp)
+                                        }, modifier = Modifier.padding(top = 8.dp)
                                     ) {
                                         Text("Insertar Nota")
                                     }
-                                    Text(
-                                        text = "Notas: ${alumnosArray?.contentToString()}",
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-                                }
-                            }
 
+                                    Spacer(modifier = Modifier.width(8.dp)) // Espacio adicional entre los botones
+
+
+                                    Button(
+                                        onClick = {
+                                            mostrarDialogo = true
+                                            mensajeDialogo =
+                                                "Notas: ${alumnosArray?.contentToString()}"
+
+                                        }, modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        Text("Ver notas")
+                                    }
+
+                                }
+
+                                if (mostrarDialogo) {
+                                    MostrarResultadoDialog(mensajeDialogo) {
+                                        mostrarDialogo = false
+                                    }
+                                }
+
+                            }
                         }
+
                     }
                 }
             }
         }
     }
 }
+
+
+@Composable
+fun MostrarResultadoDialog(mensaje: String, onClose: () -> Unit) {
+    AlertDialog(onDismissRequest = { onClose() },
+        title = { Text("Resultado") },
+        text = { Text(mensaje) },
+        confirmButton = {
+            Button(onClick = { onClose() }) {
+                Text("Aceptar")
+            }
+        })
+}
+
