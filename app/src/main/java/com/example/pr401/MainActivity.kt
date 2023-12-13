@@ -301,8 +301,7 @@ fun Main(modifier: Modifier = Modifier) {
                                         // Segundo nuevo botón después de que el array está lleno
                                         Button(
                                             onClick = {
-                                                // Lógica para el segundo nuevo botón después de que el array está lleno
-                                                // ...
+                                                reiniciarArray(alumnosArray!!)
                                             }, modifier = Modifier.padding(top = 8.dp)
                                         ) {
                                             Text("Borrar todas las notas")
@@ -388,6 +387,12 @@ fun calcularMediaSinExtremos(array: IntArray): Double {
     // Calcula la media
     val cantidadValores = array.size - 2 // Excluye los dos extremos
     return suma.toDouble() / cantidadValores
+}
+
+fun reiniciarArray(array: IntArray) {
+    for (i in array.indices) {
+        array[i] = 0
+    }
 }
 
 
