@@ -142,6 +142,8 @@ fun Main(modifier: Modifier = Modifier) {
                             var botonPresionado by remember { mutableStateOf(false) }
                             var arrayLleno by remember { mutableStateOf(false) }
                             var numeroAlto: Int by remember { mutableStateOf(0) }
+                            var numeroMedia: Double by remember { mutableStateOf(0.0) }
+
 
 
 
@@ -243,7 +245,7 @@ fun Main(modifier: Modifier = Modifier) {
                                 }
 
                                 if (arrayLleno) {
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(50.dp))
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                     ) {
@@ -251,7 +253,7 @@ fun Main(modifier: Modifier = Modifier) {
                                             onClick = {
                                                numeroAlto = encontrarValorMasAlto(alumnosArray!!)
                                                 mostrarDialogo = true
-                                                mensajeDialogo = "La nota mas alta de la clase es  $numeroAlto"
+                                                mensajeDialogo = "La nota mas alta de la clase es: $numeroAlto"
                                             }, modifier = Modifier.padding(top = 8.dp)
                                         ) {
                                             Text("Sacar la nota mas alta")
@@ -266,8 +268,9 @@ fun Main(modifier: Modifier = Modifier) {
                                         // Segundo nuevo botón después de que el array está lleno
                                         Button(
                                             onClick = {
-                                                // Lógica para el segundo nuevo botón después de que el array está lleno
-                                                // ...
+                                                numeroMedia = calcularMediaSinExtremos(alumnosArray!!)
+                                                mostrarDialogo = true
+                                                mensajeDialogo = "La media de la clase quitando la nota más alta y más baja es: $numeroMedia"
                                             }, modifier = Modifier.padding(top = 8.dp)
                                         ) {
                                             Text("Calcular la media de la notas")
@@ -355,4 +358,36 @@ fun encontrarValorMasAlto(array: IntArray): Int {
 
     return valorMasAlto
 }
+fun encontrarValorMasBajo(array: IntArray): Int {
+    if (array.isEmpty()) {
+        throw IllegalArgumentException("El array no puede estar vacío")
+    }
+
+    var valorMasBajo = array[0]
+
+    for (valor in array) {
+        if (valor < valorMasBajo) {
+            valorMasBajo = valor
+        }
+    }
+
+    return valorMasBajo
+}
+fun calcularMediaSinExtremos(array: IntArray): Double {
+    if (array.size < 3) {
+        throw IllegalArgumentException("El array debe tener al menos tres elementos")
+    }
+
+    // Encuentra el valor más alto y el valor más bajo
+    val valorMasAlto = encontrarValorMasAlto(array)
+    val valorMasBajo = encontrarValorMasBajo(array)
+
+    // Suma todos los valores excluyendo los extremos
+    val suma = array.filter { it != valorMasAlto && it != valorMasBajo }.sum()
+
+    // Calcula la media
+    val cantidadValores = array.size - 2 // Excluye los dos extremos
+    return suma.toDouble() / cantidadValores
+}
+
 
