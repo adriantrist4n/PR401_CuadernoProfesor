@@ -140,13 +140,16 @@ fun Main(modifier: Modifier = Modifier) {
                             var mostrarDialogo by remember { mutableStateOf(false) }
                             var mensajeDialogo by remember { mutableStateOf("") }
                             var botonPresionado by remember { mutableStateOf(false) }
+                            var arrayLleno by remember { mutableStateOf(false) }
+                            var numeroAlto: Int by remember { mutableStateOf(0) }
+
 
 
                             // OutlinedTextField para ingresar el número de alumnos
                             if (!botonPresionado) {
-                                OutlinedTextField(value = numeroTexto,
+                                OutlinedTextField(
+                                    value = numeroTexto,
                                     onValueChange = {
-                                        // Manejar el cambio de texto y convertirlo a Int
                                         val nuevoNumero = it.text.toIntOrNull()
 
                                         if (nuevoNumero != null && nuevoNumero >= 0) {
@@ -173,14 +176,12 @@ fun Main(modifier: Modifier = Modifier) {
                                 )
                             }
 
-                            // Botón para realizar alguna acción con el número
                             if (!botonPresionado) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End
                                 ) {
                                     Button(onClick = {
-                                        // Crear un array con el tamaño indicado
                                         alumnosArray = IntArray(numeroArray)
                                         botonPresionado = true
                                     }) {
@@ -192,9 +193,9 @@ fun Main(modifier: Modifier = Modifier) {
                             }
 
                             if (botonPresionado && alumnosArray != null) {
-                                OutlinedTextField(value = notasTexto,
+                                OutlinedTextField(
+                                    value = notasTexto,
                                     onValueChange = {
-                                        // Manejar el cambio de texto y convertirlo a Int
                                         notasTexto = it
                                     },
                                     label = { Text(text = "Ingresa las notas de los alumnos:") },
@@ -211,14 +212,10 @@ fun Main(modifier: Modifier = Modifier) {
                                 ) {
                                     Button(
                                         onClick = {
-                                            // Verificar que la nota no esté vacía
                                             if (notasTexto.text.isNotBlank()) {
-                                                // Obtener el índice actual en el que se está insertando la nota
                                                 val indice = alumnosArray!!.indexOfFirst { it == 0 }
                                                 if (indice != -1) {
-                                                    // Insertar la nota en el array
                                                     alumnosArray!![indice] = notasTexto.text.toInt()
-                                                    // Limpiar el campo de notas
                                                     notasTexto = TextFieldValue("")
                                                 } else {
                                                     mostrarDialogo = true
@@ -231,8 +228,7 @@ fun Main(modifier: Modifier = Modifier) {
                                         Text("Insertar Nota")
                                     }
 
-                                    Spacer(modifier = Modifier.width(8.dp)) // Espacio adicional entre los botones
-
+                                    Spacer(modifier = Modifier.width(8.dp))
 
                                     Button(
                                         onClick = {
@@ -244,18 +240,86 @@ fun Main(modifier: Modifier = Modifier) {
                                     ) {
                                         Text("Ver notas")
                                     }
+                                }
+
+                                if (arrayLleno) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        Button(
+                                            onClick = {
+                                               numeroAlto = encontrarValorMasAlto(alumnosArray!!)
+                                                mostrarDialogo = true
+                                                mensajeDialogo = "La nota mas alta de la clase es  $numeroAlto"
+                                            }, modifier = Modifier.padding(top = 8.dp)
+                                        ) {
+                                            Text("Sacar la nota mas alta")
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp)) // Espacio adicional entre las filas de botones
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        // Segundo nuevo botón después de que el array está lleno
+                                        Button(
+                                            onClick = {
+                                                // Lógica para el segundo nuevo botón después de que el array está lleno
+                                                // ...
+                                            }, modifier = Modifier.padding(top = 8.dp)
+                                        ) {
+                                            Text("Calcular la media de la notas")
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp)) // Espacio adicional entre las filas de botones
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        // Segundo nuevo botón después de que el array está lleno
+                                        Button(
+                                            onClick = {
+                                                // Lógica para el segundo nuevo botón después de que el array está lleno
+                                                // ...
+                                            }, modifier = Modifier.padding(top = 8.dp)
+                                        ) {
+                                            Text("Borrar una nota concreta")
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp)) // Espacio adicional entre las filas de botones
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        // Segundo nuevo botón después de que el array está lleno
+                                        Button(
+                                            onClick = {
+                                                // Lógica para el segundo nuevo botón después de que el array está lleno
+                                                // ...
+                                            }, modifier = Modifier.padding(top = 8.dp)
+                                        ) {
+                                            Text("Borrar todas las notas")
+                                        }
+                                    }
 
                                 }
 
-                                if (mostrarDialogo) {
-                                    MostrarResultadoDialog(mensajeDialogo) {
-                                        mostrarDialogo = false
-                                    }
+                                if (alumnosArray!!.all { it != 0 }) {
+                                    arrayLleno = true
                                 }
 
                             }
-                        }
 
+                            if (mostrarDialogo) {
+                                MostrarResultadoDialog(mensajeDialogo) {
+                                    mostrarDialogo = false
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -274,5 +338,21 @@ fun MostrarResultadoDialog(mensaje: String, onClose: () -> Unit) {
                 Text("Aceptar")
             }
         })
+}
+
+fun encontrarValorMasAlto(array: IntArray): Int {
+    if (array.isEmpty()) {
+        throw IllegalArgumentException("El array no puede estar vacío")
+    }
+
+    var valorMasAlto = array[0]
+
+    for (valor in array) {
+        if (valor > valorMasAlto) {
+            valorMasAlto = valor
+        }
+    }
+
+    return valorMasAlto
 }
 
