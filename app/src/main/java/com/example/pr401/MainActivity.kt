@@ -144,10 +144,6 @@ fun Main(modifier: Modifier = Modifier) {
                             var numeroAlto: Int by remember { mutableStateOf(0) }
                             var numeroMedia: Double by remember { mutableStateOf(0.0) }
 
-
-
-
-                            // OutlinedTextField para ingresar el número de alumnos
                             if (!botonPresionado) {
                                 OutlinedTextField(
                                     value = numeroTexto,
@@ -260,12 +256,11 @@ fun Main(modifier: Modifier = Modifier) {
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.height(8.dp)) // Espacio adicional entre las filas de botones
+                                    Spacer(modifier = Modifier.height(8.dp))
 
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                     ) {
-                                        // Segundo nuevo botón después de que el array está lleno
                                         Button(
                                             onClick = {
                                                 numeroMedia = calcularMediaSinExtremos(alumnosArray!!)
@@ -277,28 +272,31 @@ fun Main(modifier: Modifier = Modifier) {
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.height(8.dp)) // Espacio adicional entre las filas de botones
+                                    Spacer(modifier = Modifier.height(8.dp))
 
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                     ) {
-                                        // Segundo nuevo botón después de que el array está lleno
                                         Button(
                                             onClick = {
-                                                // Lógica para el segundo nuevo botón después de que el array está lleno
-                                                // ...
+                                                if (notasTexto.text.isNotBlank()) {
+                                                    val notaABorrar = notasTexto.text.toInt()
+                                                    ponerNotaEnCero(alumnosArray!!, notaABorrar)
+                                                    notasTexto = TextFieldValue("")
+                                                    mostrarDialogo = true
+                                                    mensajeDialogo = "La nota $notaABorrar se ha puesto en cero."
+                                                }
                                             }, modifier = Modifier.padding(top = 8.dp)
                                         ) {
                                             Text("Borrar una nota concreta")
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.height(8.dp)) // Espacio adicional entre las filas de botones
+                                    Spacer(modifier = Modifier.height(8.dp))
 
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                     ) {
-                                        // Segundo nuevo botón después de que el array está lleno
                                         Button(
                                             onClick = {
                                                 reiniciarArray(alumnosArray!!)
@@ -341,7 +339,6 @@ fun MostrarResultadoDialog(mensaje: String, onClose: () -> Unit) {
             }
         })
 }
-
 fun encontrarValorMasAlto(array: IntArray): Int {
     if (array.isEmpty()) {
         throw IllegalArgumentException("El array no puede estar vacío")
@@ -377,16 +374,20 @@ fun calcularMediaSinExtremos(array: IntArray): Double {
         throw IllegalArgumentException("El array debe tener al menos tres elementos")
     }
 
-    // Encuentra el valor más alto y el valor más bajo
     val valorMasAlto = encontrarValorMasAlto(array)
     val valorMasBajo = encontrarValorMasBajo(array)
 
-    // Suma todos los valores excluyendo los extremos
     val suma = array.filter { it != valorMasAlto && it != valorMasBajo }.sum()
 
-    // Calcula la media
-    val cantidadValores = array.size - 2 // Excluye los dos extremos
+    val cantidadValores = array.size - 2
     return suma.toDouble() / cantidadValores
+}
+fun ponerNotaEnCero(array: IntArray, indice: Int) {
+    if (indice < 0 || indice >= array.size) {
+        throw IndexOutOfBoundsException("Índice fuera de los límites del array")
+    }
+
+    array[indice] = 0
 }
 
 fun reiniciarArray(array: IntArray) {
