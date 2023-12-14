@@ -211,14 +211,20 @@ fun Main(modifier: Modifier = Modifier) {
                                     Button(
                                         onClick = {
                                             if (notasTexto.text.isNotBlank()) {
-                                                val indice = alumnosArray!!.indexOfFirst { it == 0 }
-                                                if (indice != -1) {
-                                                    alumnosArray!![indice] = notasTexto.text.toInt()
-                                                    notasTexto = TextFieldValue("")
+                                                val notaIngresada = notasTexto.text.toIntOrNull()
+
+                                                if (notaIngresada in 1..10) {
+                                                    val indice = alumnosArray!!.indexOfFirst { it == 0 }
+                                                    if (indice != -1) {
+                                                        alumnosArray!![indice] = notaIngresada!!
+                                                        notasTexto = TextFieldValue("")
+                                                    } else {
+                                                        mostrarDialogo = true
+                                                        mensajeDialogo = "Ya has ingresado todas las notas"
+                                                    }
                                                 } else {
                                                     mostrarDialogo = true
-                                                    mensajeDialogo =
-                                                        "Ya has ingresado todas las notas"
+                                                    mensajeDialogo = "Por favor, ingrese una nota válida entre 1 y 10"
                                                 }
                                             }
                                         }, modifier = Modifier.padding(top = 8.dp)
