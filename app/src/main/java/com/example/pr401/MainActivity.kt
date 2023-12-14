@@ -115,7 +115,7 @@ fun Main(modifier: Modifier = Modifier) {
                 }
             } // Termina primer apartado
 
-            // Segundo apartado
+            // Sección 2
             Box(
                 modifier = Modifier.padding(top = 9.dp, bottom = 9.dp, start = 9.dp, end = 9.dp)
             ) {
@@ -133,6 +133,7 @@ fun Main(modifier: Modifier = Modifier) {
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                         ) {
+                            // Variables del estado
                             var numeroTexto by remember { mutableStateOf(TextFieldValue("")) }
                             var numeroArray: Int by remember { mutableStateOf(0) }
                             var alumnosArray by remember { mutableStateOf<IntArray?>(null) }
@@ -145,6 +146,7 @@ fun Main(modifier: Modifier = Modifier) {
                             var numeroMedia: Double by remember { mutableStateOf(0.0) }
 
                             if (!botonPresionado) {
+                                // Entrada de texto para el número de alumnos
                                 OutlinedTextField(
                                     value = numeroTexto,
                                     onValueChange = {
@@ -175,6 +177,7 @@ fun Main(modifier: Modifier = Modifier) {
                             }
 
                             if (!botonPresionado) {
+                                // Botón para enviar el número de alumnos
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End
@@ -191,6 +194,7 @@ fun Main(modifier: Modifier = Modifier) {
                             }
 
                             if (botonPresionado && alumnosArray != null) {
+                                // Entrada de texto para las notas de los alumnos
                                 OutlinedTextField(
                                     value = notasTexto,
                                     onValueChange = {
@@ -204,6 +208,8 @@ fun Main(modifier: Modifier = Modifier) {
                                         .fillMaxWidth()
                                         .padding(top = 16.dp)
                                 )
+                                // Botones relacionados con las notas
+
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.End
